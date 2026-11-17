@@ -1,6 +1,6 @@
 /*
  * File purpose: the one script every library page loads. It defines the shared
- * helpers (Library.esc, Library.el), wires the sidebar collapse button, and
+ * helpers (Library.esc, Library.el, Library.fetchJSON), wires the sidebar collapse button, and
  * loads the page's own files from the <body data-page="name"> attribute:
  * js/data/<name>.js (only if <body data-has-data>) and js/pages/<name>.js.
  */
@@ -31,6 +31,19 @@
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
+  };
+
+  /**
+   * Library.fetchJSON fetches and parses a JSON file.
+   * @param {string} url where to fetch from
+   * @returns {Promise<*>} the parsed JSON
+   * Errors: the promise rejects on a network failure or a non-2xx status.
+   */
+  Library.fetchJSON = function (url) {
+    return fetch(url).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + url);
+      return res.json();
+    });
   };
 
   /**

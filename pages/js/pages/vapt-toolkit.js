@@ -1,13 +1,21 @@
 /*
  * File purpose: behaviour of vapt-toolkit.html - the phase sidebar, the filter
- * chips, search, and the cards / compare / coverage views. The tool data comes
- * from Library.data (js/data/vapt-toolkit.js).
+ * chips, search, and the cards / compare / coverage views. The tool list comes
+ * from Library.data (js/data/vapt-toolkit.js); the per-tool details (origin,
+ * author, language...) are fetched from the portfolio's toolkit JSON files
+ * (data/toolkit/ in fmfalgun.github.io), matched to tools by name, so adding a
+ * JSON file there marks that tool here with no change to this repo.
  */
 (function () {
   'use strict';
 
   var data = Library.data;
+  var esc = Library.esc;
   var RECON_DATA = data.RECON_DATA;
+  var SITE_ROOT = 'https://fmfalgun.github.io/';
+  var TOOLKIT_MANIFEST = SITE_ROOT + 'data/toolkit/manifest.json';
+  var DETAIL_CATEGORY = 'Hacking Tools';
+  var EXTRA_STEP = 'More from toolkit';
   var STATUS_LABEL = { have: 'In Kali Purple', add: 'Worth adding', other: 'Not in our list' };
 
   var PHASES = [
@@ -22,12 +30,15 @@
 
   var STATUS_OPTIONS = [['all', 'All tools'], ['have', '✓ In Kali Purple'], ['add', '+ Worth adding'], ['other', '◆ BlackArch / Parrot']];
   var LICENSE_OPTIONS = [['all', 'All licenses'], ['oss', '⬡ Open-source'], ['prop', '⬤ Proprietary']];
+  var DETAILS_OPTIONS = [['all', 'All'], ['with', '● With details'], ['without', '○ No details']];
   var VERIFIED_OPTIONS = [['all', 'All'], ['verified', '✓ Verified (discussed)'], ['unverified', '? Unverified (dump)']];
 
   var stepsNav = document.getElementById('steps');
   var statusRow = document.getElementById('statusRow');
   var licenseRow = document.getElementById('licenseRow');
   var verifiedRow = document.getElementById('verifiedRow');
+  var detailsRow = document.getElementById('detailsRow');
+  var langRow = document.getElementById('langRow');
   var grid = document.getElementById('grid');
   var tablewrap = document.getElementById('tablewrap');
   var empty = document.getElementById('empty');
@@ -36,7 +47,10 @@
   var searchEl = document.getElementById('search');
   var viewToggle = document.getElementById('viewToggle');
 
-  var state = { phase: 'Reconnaissance', cat: 'All', status: 'all', lic: 'all', verified: 'all', q: '', view: 'cards', expanded: { 'Reconnaissance': true } };
+  var state = { phase: 'Reconnaissance', cat: 'All', status: 'all', lic: 'all', verified: 'all', details: 'all', lang: 'all', q: '', view: 'cards', expanded: { 'Reconnaissance': true } };
+
+  var extraTools = [];
+  var languages = [];
 
   /** currentPhase returns the PHASES entry selected in the sidebar. */
   function currentPhase() { return PHASES.find(function (p) { return p.name === state.phase; }); }
@@ -127,6 +141,37 @@
   }
 
   /**
+   * searchText returns the lower-case text the search box looks in: the tool
+   * name plus, when it has details, their name, author, org and story.
+   * @param {object} d a tool or category entry
+   */
+  function searchText(d) {
+    var text = d.n;
+    (d.details || []).forEach(function (r) { text += ' ' + [r.name, r.author, r.org, r.purpose, r.why_notable].join(' '); });
+    return text.toLowerCase();
+  }
+
+  /**
+   * detailFilter tells whether entry d passes the Details chip.
+   * @param {object} d a recon tool entry
+   */
+  function detailFilter(d) {
+    if (state.details === 'all') return true;
+    var hasDetails = (d.details || []).length > 0;
+    return state.details === 'with' ? hasDetails : !hasDetails;
+  }
+
+  /**
+   * langFilter tells whether entry d passes the Language chip (a tool passes
+   * when any of its detail records has that primary language).
+   * @param {object} d a recon tool entry
+   */
+  function langFilter(d) {
+    if (state.lang === 'all') return true;
+    return (d.details || []).some(function (r) { return primaryLanguage(r) === state.lang; });
+  }
+
+  /**
    * matches applies the sidebar step, search text and chips to entry d.
    * @param {object} d a tool or category entry
    * @param {boolean} useToolFilters true for recon tools (adds status and license chips)
@@ -134,10 +179,10 @@
    */
   function matches(d, useToolFilters) {
     if (state.cat !== 'All' && d.c !== state.cat) return false;
-    if (state.q && d.n.toLowerCase().indexOf(state.q) < 0) return false;
+    if (state.q && searchText(d).indexOf(state.q) < 0) return false;
     if (!verFilter(d)) return false;
     if (!useToolFilters) return true;
-    return (state.status === 'all' || d.s === state.status) && licFilter(d);
+    return (state.status === 'all' || d.s === state.status) && licFilter(d) && detailFilter(d) && langFilter(d);
   }
 
   /**
@@ -157,6 +202,65 @@
   }
 
   /**
+   * primaryLanguage reduces a detail record's free-text language ("C (core);
+   * Lua (NSE scripts)") to its first word, so the Language chips stay short.
+   * @param {object} record a toolkit detail record
+   * @returns {string} the first word, or '' when the record has no language
+   */
+  function primaryLanguage(record) {
+    return (record.language || '').split(/[\s(;/,]/)[0];
+  }
+
+  /**
+   * detailLinksHTML renders a detail record's links as a link row.
+   * @param {object} record a toolkit detail record
+   * @returns {string} HTML, or '' when the record has no links
+   */
+  function detailLinksHTML(record) {
+    var entries = Object.keys(record.links || {});
+    if (!entries.length) return '';
+    return '<div class="linkrow">' + entries.map(function (label) {
+      return '<a href="' + esc(record.links[label]) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + ' ↗</a>';
+    }).join('') + '</div>';
+  }
+
+  /**
+   * detailHTML renders one toolkit record as a collapsible block: author, org,
+   * year and language tags, the "why notable" story, and its links.
+   * @param {object} record a toolkit detail record
+   * @returns {string} HTML for a <details> block
+   */
+  function detailHTML(record) {
+    var tags = [record.author, record.org, record.year, record.language].filter(Boolean).map(function (t) {
+      return '<span class="pill blue">' + esc(t) + '</span>';
+    }).join('');
+    return '<details class="detail"><summary>Origin: ' + esc(record.name) + '</summary>' +
+      '<div class="pillrow">' + tags + '</div>' +
+      (record.why_notable ? '<p class="why">' + esc(record.why_notable) + '</p>' : '') +
+      detailLinksHTML(record) + '</details>';
+  }
+
+  /**
+   * detailsBlockHTML renders every detail record of a tool, or '' for none.
+   * @param {object} d a tool entry with an optional details array
+   */
+  function detailsBlockHTML(d) {
+    return (d.details || []).map(detailHTML).join('');
+  }
+
+  /**
+   * extraCardHTML renders a toolkit record that matches no tool in the list,
+   * so nothing in the portfolio toolkit is lost.
+   * @param {object} d an extra entry {n, c, details:[record]}
+   */
+  function extraCardHTML(d) {
+    var record = d.details[0];
+    return '<div class="card k-other"><p class="tname">' + esc(record.name) + '</p><p class="tcat">from the portfolio toolkit</p>' +
+      '<div class="pillrow"><span class="pill amber">Details</span></div>' +
+      '<p class="why">' + esc(record.purpose || '') + '</p>' + detailsBlockHTML(d) + '</div>';
+  }
+
+  /**
    * cardHTML renders one recon tool as a card.
    * @param {object} d a recon tool entry
    * @returns {string} card HTML
@@ -171,8 +275,9 @@
       '<span class="status-pill ' + d.s + '">' + STATUS_LABEL[d.s] + '</span>' +
       '<span class="act-pill ' + d.act + '">' + (d.act === 'passive' ? 'Passive' : 'Active') + '</span>' +
       '<span class="lic-pill ' + (d.oss ? 'oss' : 'prop') + '">' + (d.oss ? 'Open-source' : 'Proprietary') + '</span>' +
-      '<span class="ver-pill verified">✓ Verified</span></div>' +
-      '<p class="why">' + d.w + '</p>' + foot + linkHTML(d) + '</div>';
+      '<span class="ver-pill verified">✓ Verified</span>' +
+      ((d.details || []).length ? '<span class="pill amber">Details</span>' : '') + '</div>' +
+      '<p class="why">' + d.w + '</p>' + foot + linkHTML(d) + detailsBlockHTML(d) + '</div>';
   }
 
   /**
@@ -197,6 +302,14 @@
     return '<div class="subhead"><span class="' + dotClass + '"></span> ' + label + ' <span class="line"></span></div>';
   }
 
+  /**
+   * toolCardHTML renders a list entry or an extra toolkit entry as the right card.
+   * @param {object} d a tool entry or an extra entry
+   */
+  function toolCardHTML(d) {
+    return d.extra ? extraCardHTML(d) : cardHTML(d);
+  }
+
   /** buildCards fills the grid with the cards for the current phase, step and filters. */
   function buildCards() {
     var phase = currentPhase();
@@ -204,8 +317,9 @@
       grid.innerHTML = phase.data.filter(function (d) { return matches(d, false); }).map(catCardHTML).join('');
       return;
     }
-    var pool = phase.data.filter(function (d) { return matches(d, true); });
-    if (state.cat === 'All') { grid.innerHTML = pool.map(cardHTML).join(''); return; }
+    var pool = phase.data.concat(extraTools).filter(function (d) { return matches(d, true); });
+    if (state.cat === 'All') { grid.innerHTML = pool.map(toolCardHTML).join(''); return; }
+    if (state.cat === EXTRA_STEP) { grid.innerHTML = pool.map(extraCardHTML).join(''); return; }
     var passive = pool.filter(function (d) { return d.act === 'passive'; });
     var active = pool.filter(function (d) { return d.act === 'active'; });
     var html = '';
@@ -287,6 +401,10 @@
     buildChipRow(statusRow, STATUS_OPTIONS, 'status');
     buildChipRow(licenseRow, LICENSE_OPTIONS, 'lic');
     buildChipRow(verifiedRow, VERIFIED_OPTIONS, 'verified');
+    buildChipRow(detailsRow, DETAILS_OPTIONS, 'details');
+    buildChipRow(langRow, [['all', 'All languages']].concat(languages.map(function (l) { return [l, l]; })), 'lang');
+    detailsRow.style.display = isRecon && languages.length ? 'flex' : 'none';
+    langRow.style.display = isRecon && languages.length ? 'flex' : 'none';
     viewToggle.querySelectorAll('button').forEach(function (b) {
       b.classList.toggle('active', b.dataset.view === state.view);
       b.disabled = !isRecon && b.dataset.view !== 'cards';
@@ -296,10 +414,95 @@
     else renderCards(animate);
   }
 
+  /**
+   * normalizeName turns a tool name into a comparison key: lower case, no
+   * parenthesised notes, no punctuation, no trailing "s"/"ing" (so "Google
+   * Dorks" meets "Google dorking").
+   * @param {string} name a tool name from either source
+   */
+  function normalizeName(name) {
+    return name.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/g, '').replace(/(ing|s)$/, '');
+  }
+
+  /**
+   * nameKeys splits a combined list name ("gau / waybackurls") into one key per tool.
+   * @param {string} name a tool name from the list
+   */
+  function nameKeys(name) {
+    return name.split('/').map(normalizeName);
+  }
+
+  /**
+   * attachDetails links each detail record to the list tool(s) it names
+   * (d.details) and returns the records that match no tool.
+   * @param {Array} records toolkit detail records
+   * @returns {Array} the records no list tool matched
+   */
+  function attachDetails(records) {
+    var unmatched = [];
+    records.forEach(function (record) {
+      var key = normalizeName(record.name);
+      var hits = RECON_DATA.filter(function (d) { return nameKeys(d.n).indexOf(key) >= 0; });
+      hits.forEach(function (d) { (d.details = d.details || []).push(record); });
+      if (!hits.length) unmatched.push(record);
+    });
+    return unmatched;
+  }
+
+  /**
+   * useRecords wires the loaded records into the page: matches them to tools,
+   * adds an extra sidebar step for the unmatched ones, fills the Language
+   * chips, and redraws.
+   * @param {Array} records toolkit detail records
+   */
+  function useRecords(records) {
+    var unmatched = attachDetails(records);
+    extraTools = unmatched.map(function (record) { return { n: record.name, c: EXTRA_STEP, extra: true, verified: true, details: [record] }; });
+    if (extraTools.length) currentReconPhase().steps = data.RECON_STEPS.concat([EXTRA_STEP]);
+    languages = records.map(primaryLanguage).filter(function (l, i, all) { return l && all.indexOf(l) === i; }).sort();
+    render(false);
+  }
+
+  /** currentReconPhase returns the Reconnaissance entry of PHASES. */
+  function currentReconPhase() { return PHASES.find(function (p) { return p.type === 'recon'; }); }
+
+  /**
+   * fetchTools fetches every tool JSON listed by one toolkit manifest.
+   * @param {string} manifestPath path of the manifest, relative to the site root
+   * @returns {Promise<Array>} the records that loaded (failed files are skipped)
+   */
+  function fetchTools(manifestPath) {
+    var dir = SITE_ROOT + manifestPath.replace(/[^/]+$/, '');
+    return Library.fetchJSON(SITE_ROOT + manifestPath).then(function (files) {
+      return Promise.allSettled(files.map(function (f) { return Library.fetchJSON(dir + f); }));
+    }).then(function (results) {
+      return results.filter(function (r) { return r.status === 'fulfilled'; }).map(function (r) { return r.value; });
+    });
+  }
+
+  /**
+   * loadToolkit follows the portfolio's toolkit manifest (categories, then
+   * phase or flat manifests, then tool files) and resolves with all records of
+   * the Hacking Tools category. Rejects when the top-level manifest is unreachable.
+   */
+  function loadToolkit() {
+    return Library.fetchJSON(TOOLKIT_MANIFEST).then(function (top) {
+      var paths = [];
+      top.categories.forEach(function (c) {
+        if (c.type === 'phases') c.phases.forEach(function (ph) { paths.push(ph.manifest); });
+        else paths.push(c.manifest);
+      });
+      return Promise.all(paths.map(fetchTools));
+    }).then(function (lists) {
+      return [].concat.apply([], lists).filter(function (r) { return r.category === DETAIL_CATEGORY; });
+    });
+  }
+
   viewToggle.querySelectorAll('button').forEach(function (b) {
     b.onclick = function () { if (!b.disabled) { state.view = b.dataset.view; render(true); } };
   });
   searchEl.addEventListener('input', function (e) { state.q = e.target.value.trim().toLowerCase(); render(false); });
 
   render(false);
+  loadToolkit().then(useRecords).catch(function (err) { console.warn('[vapt-toolkit] toolkit details unavailable:', err.message); });
 })();

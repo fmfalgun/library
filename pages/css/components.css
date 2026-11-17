@@ -90,6 +90,13 @@
   padding: 2px 7px; border: 1px solid var(--line); border-radius: 2px;
 }
 
+/* Collapsible detail block inside a card (origin story, author, links) */
+.detail { border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 7px; }
+.detail summary { cursor: pointer; font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; color: var(--accent); }
+.detail .pillrow { margin: 8px 0 6px; }
+.detail .why { margin: 0 0 6px; }
+.detail .linkrow { border-top: 0; padding-top: 0; }
+
 /* Link and source footers inside a card */
 .linkrow, .repo {
   font-family: var(--mono); font-size: .74rem; border-top: 1px dashed var(--line); padding-top: 7px; margin-top: 4px;
