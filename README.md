@@ -18,9 +18,24 @@ Live at `https://fmfalgun.github.io/<page-name>` (for example `https://fmfalgun.
 library/
 ├── README.md                    repo details and structure
 ├── .gitignore                   keeps keys, env files and local tool dirs out of git
-├── dns-mindmap.html             DNS mind map page
-├── linux-directory-guide.html   Linux directory guide page
-├── vapt-toolkit.html            VAPT toolkit page
+├── dns-mindmap.html             DNS mind map page (markup only)
+├── linux-directory-guide.html   Linux directory guide page (markup only)
+├── vapt-toolkit.html            VAPT toolkit page (markup only)
+├── css/
+│   ├── tokens.css               colors, fonts, sizes, dark/light themes
+│   ├── base.css                 page shell: header, layout, sidebar, footer
+│   └── components.css           cards, chips, lists, tables, mind-map branches
+├── js/
+│   ├── core.js                  shared helpers; loads each page's data and script
+│   ├── data/                    one data file per page that needs data
+│   │   ├── linux-directory-guide.js
+│   │   └── vapt-toolkit.js
+│   └── pages/                   one behaviour script per page
+│       ├── dns-mindmap.js
+│       ├── linux-directory-guide.js
+│       └── vapt-toolkit.js
+├── docs/
+│   └── STYLE_GUIDE.md           rules every page follows
 └── ci/
     └── hooks/
         └── pre-commit           blocks commits that stage keys or secrets

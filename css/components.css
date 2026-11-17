@@ -1,0 +1,171 @@
+/*
+ * File purpose: reusable components for library pages - toolbar, chips, cards,
+ * pills, link rows, tables, key/value lists, disclosure branches, code blocks.
+ * Page-specific CSS is not allowed; a new look is a new component here.
+ */
+
+/* Toolbar: search box, button group, filter chips */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.search {
+  flex: 1; min-width: 150px; background: var(--panel); border: 1px solid var(--line);
+  color: var(--text); padding: 9px 11px; font-family: var(--mono); font-size: .82rem; border-radius: var(--radius);
+}
+.search:focus { outline: 1px solid var(--green); }
+.viewtoggle { display: flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; flex: none; }
+.viewtoggle button {
+  background: var(--panel); color: var(--dim); border: none; padding: 9px 11px;
+  font-family: var(--mono); font-size: .7rem; cursor: pointer; white-space: nowrap;
+}
+.viewtoggle button.active { background: var(--green); color: var(--bg); font-weight: 600; }
+.viewtoggle button:disabled { opacity: .35; cursor: not-allowed; }
+
+.row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip {
+  background: var(--panel); border: 1px solid var(--line); color: var(--dim);
+  padding: 6px 10px; font-size: .7rem; border-radius: 999px; cursor: pointer; font-family: var(--mono);
+  transition: border-color .15s, color .15s, background .15s; white-space: nowrap;
+}
+.chip:hover { color: var(--text); border-color: var(--dim); }
+.chip.active { color: var(--bg); background: var(--green); border-color: var(--green); font-weight: 600; }
+.chip.active[data-val="add"] { background: var(--amber); border-color: var(--amber); }
+.chip.active[data-val="other"] { background: var(--violet); border-color: var(--violet); }
+.chip.active[data-val="oss"] { background: var(--blue); border-color: var(--blue); }
+.chip.active[data-val="prop"],
+.chip.active[data-val="unverified"] { background: var(--red); border-color: var(--red); }
+
+/* Result count, note box, empty state */
+.count { color: var(--dim); font-size: .7rem; margin: 2px 0 14px; }
+.count b { color: var(--text); }
+.notebox {
+  color: var(--dim); font-size: .72rem; border: 1px dashed var(--line);
+  border-radius: var(--radius-lg); padding: 10px 12px; margin: 4px 0 14px; line-height: 1.5;
+}
+.notebox b { color: var(--text); }
+.pickstep { color: var(--dim); font-size: .78rem; padding: 26px; text-align: center; }
+.empty { color: var(--dim); font-size: .78rem; padding: 26px 0; text-align: center; display: none; }
+.hide { display: none !important; }
+
+/* Section heading: dim label with a rule (and optional colored dot) */
+.subhead {
+  display: flex; align-items: center; gap: 8px; margin: 16px 0 10px; color: var(--dim);
+  font-size: .66rem; letter-spacing: .04em; grid-column: 1 / -1;
+}
+.subhead:first-child { margin-top: 0; }
+.subhead .line { flex: 1; height: 1px; background: var(--line); }
+.subhead .dotp, .subhead .dota { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.subhead .dotp { background: var(--blue); }
+.subhead .dota { background: var(--amber); }
+.section-title { font-size: 1rem; margin: 0 0 4px; font-weight: 700; }
+.lead { color: var(--dim); font-size: .76rem; line-height: 1.5; margin: 0 0 14px; max-width: 78ch; }
+
+/* Cards: the default container for one item */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--line);
+  border-radius: var(--radius); padding: 12px 13px; overflow: hidden; min-width: 0;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.card.k-have, .card.k-verified { border-left-color: var(--green); }
+.card.k-add { border-left-color: var(--amber); }
+.card.k-other { border-left-color: var(--violet); }
+.card.k-unverified { border-left-color: var(--red); }
+.tname { font-size: .86rem; font-weight: 700; margin: 0 0 3px; word-break: break-word; }
+.tcat { color: var(--dim); font-size: .64rem; text-transform: lowercase; margin: 0 0 7px; }
+.why { color: var(--dim); font-size: .71rem; line-height: 1.45; margin: 0 0 8px; }
+.card .why:last-child { margin-bottom: 0; }
+
+/* Pills: small status labels. Color is set by a modifier class */
+.pillrow { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+.pill, .status-pill, .act-pill, .lic-pill, .ver-pill {
+  display: inline-block; font-size: .6rem; padding: 2px 6px; border-radius: 3px; font-weight: 600; white-space: nowrap;
+}
+.pill.green, .status-pill.have, .ver-pill.verified { background: var(--green-bg); color: var(--green); }
+.pill.amber, .status-pill.add, .act-pill.active { background: var(--amber-bg); color: var(--amber); }
+.pill.violet, .status-pill.other { background: var(--violet-bg); color: var(--violet); }
+.pill.blue, .act-pill.passive, .lic-pill.oss { background: var(--blue-bg); color: var(--blue); }
+.pill.red, .lic-pill.prop, .ver-pill.unverified { background: var(--red-bg); color: var(--red); }
+.countchip {
+  display: inline-block; background: var(--hover-bg); font-size: .66rem;
+  padding: 2px 7px; border-radius: 3px; font-weight: 700;
+}
+
+/* Link and source footers inside a card */
+.linkrow, .repo {
+  font-size: .68rem; border-top: 1px dashed var(--line); padding-top: 7px; margin-top: 4px;
+}
+.linkrow { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.linkrow .lbl { color: var(--dim); }
+.repo { display: flex; align-items: center; gap: 6px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); flex: none; }
+.src { color: var(--dim); font-size: .66rem; }
+.src b { color: var(--violet); }
+
+/* Key/value list: a bordered panel of rows (path or command + meaning) */
+.list { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 6px; }
+.list-row {
+  display: grid; grid-template-columns: minmax(150px, 260px) 1fr; gap: 16px;
+  padding: 8px 14px; border-top: 1px solid var(--line); font-size: .74rem; line-height: 1.5;
+}
+.list-row:first-child { border-top: 0; }
+.list-row code { color: var(--green); background: none; padding: 0; overflow-wrap: anywhere; }
+.list-row .pill { margin-left: 8px; }
+
+/* Code block for directory trees and snippets */
+.codeblock {
+  font-family: var(--mono);
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 14px 16px; margin: 0 0 14px; overflow-x: auto; font-size: .74rem; line-height: 1.7;
+}
+
+/* Tables: compare and coverage views */
+.tablewrap { overflow-x: auto; }
+.tablewrap table { width: 100%; border-collapse: collapse; font-size: .7rem; }
+.tablewrap th, .tablewrap td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tablewrap th { color: var(--dim); font-weight: 600; background: var(--panel); position: sticky; top: 0; }
+.tablewrap td.tool { font-weight: 700; white-space: nowrap; }
+.tablewrap td.yes { color: var(--green); text-align: center; }
+.tablewrap td.no { color: var(--dim); text-align: center; }
+.tablewrap td.total { font-weight: 700; text-align: right; }
+.badge { display: inline-block; font-size: .6rem; padding: 2px 6px; border-radius: 3px; font-weight: 600; white-space: nowrap; }
+.badge.have { background: var(--green-bg); color: var(--green); }
+.badge.add { background: var(--amber-bg); color: var(--amber); }
+.badge.other { background: var(--violet-bg); color: var(--violet); }
+
+/* Mind map: a root pill and colored, collapsible branches.
+   A branch picks its color with data-c="1".."7" (the --c1..--c7 tokens). */
+.tree { position: relative; padding-left: 34px; }
+.tree::before {
+  content: ""; position: absolute; left: 11px; top: 0; bottom: 18px;
+  width: 3px; background: var(--line); border-radius: 2px;
+}
+.root {
+  display: inline-block; background: var(--text); color: var(--bg); font-weight: 800;
+  font-size: 1rem; padding: 7px 18px; border-radius: 999px; margin: 0 0 20px -34px; position: relative;
+}
+.branch { position: relative; margin: 0 0 14px; }
+.branch[data-c="1"] { --b: var(--c1); } .branch[data-c="2"] { --b: var(--c2); }
+.branch[data-c="3"] { --b: var(--c3); } .branch[data-c="4"] { --b: var(--c4); }
+.branch[data-c="5"] { --b: var(--c5); } .branch[data-c="6"] { --b: var(--c6); }
+.branch[data-c="7"] { --b: var(--c7); }
+.branch::before { content: ""; position: absolute; left: -23px; top: 18px; width: 23px; height: 3px; background: var(--b); }
+.branch summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+  background: var(--b); color: var(--bg); font-size: .8rem; font-weight: 700;
+  padding: 7px 14px; border-radius: var(--radius-lg);
+}
+.branch summary::-webkit-details-marker { display: none; }
+.branch summary::after { content: "−"; font-weight: 800; opacity: .85; }
+.branch:not([open]) summary::after { content: "+"; }
+.branch summary:focus-visible, button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.branch > .why { margin: 8px 0 0 4px; }
+.branch .grid { margin: 10px 0 0 6px; padding-left: 14px; border-left: 3px solid var(--b); }
+.branch .card { border-left-color: var(--b); }
+.card.cmd code { display: block; margin-bottom: 3px; }
+
+@media (max-width: 820px) {
+  .grid { grid-template-columns: 1fr; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .viewtoggle { width: 100%; }
+  .viewtoggle button { flex: 1; }
+  .list-row { grid-template-columns: 1fr; gap: 2px; }
+}
