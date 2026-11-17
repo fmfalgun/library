@@ -22,12 +22,13 @@ Open a page at `https://fmfalgun.github.io/library/?page=<page-name>` (page name
 library/
 ├── README.md        repo details and structure
 ├── index.html       shell: portfolio header, nav and footer around the chosen page
+├── 404.html         not-found page; sends old /library/<name>.html links to the shell
 ├── library.json     index of pages (read by the shell and the portfolio)
 ├── .gitignore       keeps keys, env files and local tool dirs out of git
 ├── pages/           the HTML pages, with the css/ and js/ they share
 │   ├── css/         tokens, page shell and components
 │   └── js/          core.js, plus per-page scripts (pages/) and data (data/)
-├── shell/           styles and script for index.html
+├── shell/           styles and scripts for index.html and 404.html
 ├── docs/            STYLE_GUIDE.md, the rules every page follows
 └── ci/              sync-index.py and the pre-commit hook
     └── hooks/       pre-commit (blocks secrets, refreshes the index)
