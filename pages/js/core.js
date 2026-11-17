@@ -34,13 +34,15 @@
   };
 
   /**
-   * Library.fetchJSON fetches and parses a JSON file.
+   * Library.fetchJSON fetches and parses a JSON file. It asks the server to
+   * revalidate the browser's cached copy on every call, so an edited file is
+   * seen at once instead of after GitHub Pages' 10-minute cache expires.
    * @param {string} url where to fetch from
    * @returns {Promise<*>} the parsed JSON
    * Errors: the promise rejects on a network failure or a non-2xx status.
    */
   Library.fetchJSON = function (url) {
-    return fetch(url).then(function (res) {
+    return fetch(url, { cache: 'no-cache' }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + url);
       return res.json();
     });
