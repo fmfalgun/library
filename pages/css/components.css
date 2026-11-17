@@ -1,6 +1,6 @@
 /*
  * File purpose: reusable components for library pages - toolbar, chips, cards,
- * pills, link rows, tables, key/value lists, disclosure branches, code blocks.
+ * pills, link rows, tables, key/value lists, colored sections, code blocks.
  * Page-specific CSS is not allowed; a new look is a new component here.
  */
 
@@ -132,36 +132,20 @@
 .badge.add { color: var(--amber); }
 .badge.other { color: var(--violet); }
 
-/* Mind map: a root pill and colored, collapsible branches.
-   A branch picks its color with data-c="1".."7" (the --c1..--c7 tokens). */
-.tree { position: relative; padding-left: 34px; }
-.tree::before {
-  content: ""; position: absolute; left: 11px; top: 0; bottom: 18px;
-  width: 3px; background: var(--line); border-radius: 2px;
+/* Colored section: data-c="1".."7" picks one of the --c1..--c7 tokens for the
+   title marker and the card borders (used by the DNS mindmap). */
+[data-c="1"] { --b: var(--c1); } [data-c="2"] { --b: var(--c2); }
+[data-c="3"] { --b: var(--c3); } [data-c="4"] { --b: var(--c4); }
+[data-c="5"] { --b: var(--c5); } [data-c="6"] { --b: var(--c6); }
+[data-c="7"] { --b: var(--c7); }
+[data-c] .section-title::before {
+  content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .5em;
+  background: var(--b); vertical-align: .05em;
 }
-.root {
-  display: inline-block; background: var(--text); color: var(--bg); font-weight: 800;
-  font-family: var(--font-display); font-size: 1.2rem; letter-spacing: .06em; padding: 7px 18px; border-radius: 999px; margin: 0 0 20px -34px; position: relative;
-}
-.branch { position: relative; margin: 0 0 14px; }
-.branch[data-c="1"] { --b: var(--c1); } .branch[data-c="2"] { --b: var(--c2); }
-.branch[data-c="3"] { --b: var(--c3); } .branch[data-c="4"] { --b: var(--c4); }
-.branch[data-c="5"] { --b: var(--c5); } .branch[data-c="6"] { --b: var(--c6); }
-.branch[data-c="7"] { --b: var(--c7); }
-.branch::before { content: ""; position: absolute; left: -23px; top: 18px; width: 23px; height: 3px; background: var(--b); }
-.branch summary {
-  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
-  background: color-mix(in srgb, var(--b) 14%, var(--panel)); border: 1px solid var(--b); color: var(--text); font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: .04em;
-  padding: 6px 14px; border-radius: var(--radius);
-}
-.branch summary::-webkit-details-marker { display: none; }
-.branch summary::after { content: "−"; font-weight: 800; opacity: .85; }
-.branch:not([open]) summary::after { content: "+"; }
-.branch summary:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.branch > .why { margin: 8px 0 0 4px; }
-.branch .grid { margin: 10px 0 0 6px; padding-left: 14px; border-left: 3px solid var(--b); }
-.branch .card { border-left-color: var(--b); }
+[data-c] .card { border-left-color: var(--b); }
 .card.cmd code { display: block; margin-bottom: 3px; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+section { margin-bottom: 36px; }
 
 /* Hover: left border turns cream, as on the portfolio cards (must stay after the card color rules) */
 .card:hover { border-left-color: var(--text); }

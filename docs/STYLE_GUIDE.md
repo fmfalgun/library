@@ -19,7 +19,7 @@ Every page in this repo looks and behaves the same because it is built only from
 ## New page checklist
 
 1. Copy the smallest existing page (`pages/dns-mindmap.html`) and change the title, header and content.
-2. Reuse existing components (`.card`, `.grid`, `.list`, `.chip`, `.notebox`, `.codeblock`, `.branch`).
+2. Reuse existing components (`.card`, `.grid`, `.list`, `.chip`, `.notebox`, `.codeblock`, `data-c` colored sections).
 3. If a component is missing, add it to `pages/css/components.css` first.
 4. Add `pages/js/pages/<page-name>.js` (and `pages/js/data/<page-name>.js`) only if the page needs behaviour.
 5. Commit. The pre-commit hook runs `ci/sync-index.py`, which appends the new page to `library.json` and regenerates the README page table. Never edit the README table by hand; edit `library.json` (tags, wording) instead.

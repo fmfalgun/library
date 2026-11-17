@@ -12,57 +12,55 @@
 <body data-page="dns-mindmap">
 <header class="page-header">
   <h1>DNS <span>Mindmap</span></h1>
-  <p class="sub">Eight branches to remember how DNS works, who plays which role, and how to test any server’s claims.</p>
+  <p class="sub">Eight branches to remember how DNS works, who plays which role, and how to test any server’s claims. Pick a branch in the side panel or search.</p>
 </header>
 
 <div class="layout">
+  <div class="navwrap">
+    <button class="collapsebtn" id="collapseBtn" title="Collapse panel">☰<span class="label"> Branches</span></button>
+    <nav class="steps" id="nav"></nav>
+  </div>
   <main>
     <div class="toolbar">
-      <div class="viewtoggle">
-        <button id="openAll">Expand all</button>
-        <button id="closeAll">Collapse all</button>
-      </div>
+      <input class="search" type="search" id="q" placeholder="Search the mindmap, e.g. DNSSEC, dig, TTL" aria-label="Search">
     </div>
 
-<div class="tree">
-<div class="root">DNS</div>
-
-<details class="branch" data-c="1" open>
-<summary>1. Roles in a lookup</summary>
-<p class="why">Memory line: you ask the resolver, it asks root, then TLD, then authoritative.</p>
-<div class="grid">
+    <section id="roles-in-a-lookup" data-c="1">
+      <h2 class="section-title">1. Roles in a lookup</h2>
+      <p class="lead">Memory line: you ask the resolver, it asks root, then TLD, then authoritative.</p>
+      <div class="grid">
 <div class="card"><p class="tname">Recursive resolver</p><p class="why">Does the hunting for you and caches. ISP, 8.8.8.8, 1.1.1.1</p></div>
 <div class="card"><p class="tname">Root server</p><p class="why">Top of the tree. Points to the TLD server.</p></div>
 <div class="card"><p class="tname">TLD server</p><p class="why">Handles .com, .org, .in. Points to the domain’s server.</p></div>
 <div class="card"><p class="tname">Authoritative server</p><p class="why">Holds the real records. Gives the final answer.</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="2" open>
-<summary>2. Server configurations</summary>
-<p class="why">Who owns the data, and who just passes it on.</p>
-<div class="grid">
+    <section id="server-configurations" data-c="2">
+      <h2 class="section-title">2. Server configurations</h2>
+      <p class="lead">Who owns the data, and who just passes it on.</p>
+      <div class="grid">
 <div class="card"><p class="tname">Primary (master)</p><p class="why">Original, editable zone data.</p></div>
 <div class="card"><p class="tname">Secondary (slave)</p><p class="why">Read-only synced copy for backup and load.</p></div>
 <div class="card"><p class="tname">Caching-only</p><p class="why">Remembers answers, hosts no zones.</p></div>
 <div class="card"><p class="tname">Forwarder</p><p class="why">Hands queries to another DNS server.</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="3" open>
-<summary>3. Query types</summary>
-<p class="why">Recursive = “get me the answer”. Iterative = “tell me who to ask next”.</p>
-<div class="grid">
+    <section id="query-types" data-c="3">
+      <h2 class="section-title">3. Query types</h2>
+      <p class="lead">Recursive = “get me the answer”. Iterative = “tell me who to ask next”.</p>
+      <div class="grid">
 <div class="card"><p class="tname">Recursive</p><p class="why">Server must return a final answer or an error.</p></div>
 <div class="card"><p class="tname">Iterative</p><p class="why">Server returns a referral, client keeps asking.</p></div>
 <div class="card"><p class="tname">Non-recursive</p><p class="why">Answered from cache or the server’s own zone.</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="4" open>
-<summary>4. Record types</summary>
-<p class="why">Names to addresses (A, AAAA), aliases (CNAME), mail (MX), and housekeeping.</p>
-<div class="grid">
+    <section id="record-types" data-c="4">
+      <h2 class="section-title">4. Record types</h2>
+      <p class="lead">Names to addresses (A, AAAA), aliases (CNAME), mail (MX), and housekeeping.</p>
+      <div class="grid">
 <div class="card"><p class="tname">A</p><p class="why">Name to IPv4</p></div>
 <div class="card"><p class="tname">AAAA</p><p class="why">Name to IPv6</p></div>
 <div class="card"><p class="tname">CNAME</p><p class="why">Alias to another name</p></div>
@@ -72,38 +70,38 @@
 <div class="card"><p class="tname">PTR</p><p class="why">IP to name (reverse lookup)</p></div>
 <div class="card"><p class="tname">SOA</p><p class="why">Zone admin info</p></div>
 <div class="card"><p class="tname">SRV</p><p class="why">Where a specific service lives</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="5" open>
-<summary>5. Other classifications</summary>
-<p class="why">Who can use it, and how well is it protected.</p>
-<div class="grid">
+    <section id="other-classifications" data-c="5">
+      <h2 class="section-title">5. Other classifications</h2>
+      <p class="lead">Who can use it, and how well is it protected.</p>
+      <div class="grid">
 <div class="card"><p class="tname">Public</p><p class="why">Internet-facing names and open resolvers.</p></div>
 <div class="card"><p class="tname">Private</p><p class="why">Internal names inside a network.</p></div>
 <div class="card"><p class="tname">DNSSEC</p><p class="why">Signs records so tampering is detected.</p></div>
 <div class="card"><p class="tname">DoH / DoT</p><p class="why">Encrypted DNS over HTTPS (443) or TLS (853).</p></div>
 <div class="card"><p class="tname">DoQ</p><p class="why">Encrypted DNS over QUIC.</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="6" open>
-<summary>6. Your resolvers</summary>
-<p class="why">All public ones are recursive, caching resolvers. Features can change, so verify with the tests in branch 7.</p>
-<div class="grid">
+    <section id="your-resolvers" data-c="6">
+      <h2 class="section-title">6. Your resolvers</h2>
+      <p class="lead">All public ones are recursive, caching resolvers. Features can change, so verify with the tests in branch 7.</p>
+      <div class="grid">
 <div class="card"><p class="tname">Router default</p><p class="why">Forwarder with a small cache. Private IP, usually plain DNS, no filtering.</p></div>
 <div class="card"><p class="tname">Cloudflare 1.1.1.1</p><p class="why">DoH, DoT, DNSSEC. No filtering (1.1.1.2 blocks malware).</p></div>
 <div class="card"><p class="tname">Google 8.8.8.8</p><p class="why">DoH, DoT, DNSSEC. No filtering.</p></div>
 <div class="card"><p class="tname">Quad9 9.9.9.9</p><p class="why">DoH, DoT, DNSSEC. Blocks known malicious domains.</p></div>
 <div class="card"><p class="tname">AdGuard 94.140.14.14</p><p class="why">DoH, DoT, DoQ. Blocks ads, trackers, malware.</p></div>
 <div class="card"><p class="tname">OpenDNS 208.67.222.222</p><p class="why">DoH, DNSCrypt. Phishing blocked; customizable with an account.</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="7" open>
-<summary>7. Test it yourself</summary>
-<p class="why">Turn each claim into a query that only works if the claim is true.</p>
-<div class="grid">
+    <section id="test-it-yourself" data-c="7">
+      <h2 class="section-title">7. Test it yourself</h2>
+      <p class="lead">Turn each claim into a query that only works if the claim is true.</p>
+      <div class="grid">
 <div class="card cmd"><p class="tname">Which server am I using?</p><code>resolvectl status</code><code>ipconfig /all</code><p class="why">192.168.x.x means your router is a forwarder.</p></div>
 <div class="card cmd"><p class="tname">Who is really upstream?</p><code>dig +short whoami.akamai.net @server</code><p class="why">Shows the IP that reached the authoritative side.</p></div>
 <div class="card cmd"><p class="tname">Recursive or authoritative?</p><code>dig @server google.com</code><p class="why">Flag <code>ra</code> = recursive, <code>aa</code> = authoritative.</p></div>
@@ -115,13 +113,13 @@
 <div class="card cmd"><p class="tname">DoH support?</p><code>curl -H 'accept: application/dns-json' 'https://server/dns-query?name=example.com'</code><p class="why">A valid answer over HTTPS.</p></div>
 <div class="card cmd"><p class="tname">Open ports?</p><code>nmap -p 53,853,443 server</code><p class="why">Shows which DNS protocols are listening.</p></div>
 <div class="card cmd"><p class="tname">Plain-text leak?</p><code>tcpdump port 53</code><p class="why">Traffic here means queries are unencrypted.</p></div>
-</div>
-</details>
+      </div>
+    </section>
 
-<details class="branch" data-c="2" open>
-<summary>8. Reading dig output</summary>
-<p class="why">Every reply has a header, sections, and a footer. Each part is evidence.</p>
-<div class="grid">
+    <section id="reading-dig-output" data-c="2">
+      <h2 class="section-title">8. Reading dig output</h2>
+      <p class="lead">Every reply has a header, sections, and a footer. Each part is evidence.</p>
+      <div class="grid">
 <div class="card"><p class="tname">Flag qr</p><p class="why">This is a response, not a query.</p></div>
 <div class="card"><p class="tname">Flag rd</p><p class="why">Recursion desired. Your query asked for it.</p></div>
 <div class="card"><p class="tname">Flag ra</p><p class="why">Recursion available. The server offers it, so it is a resolver.</p></div>
@@ -139,9 +137,10 @@
 <div class="card"><p class="tname">Answer row</p><p class="why"><code>name  TTL  IN  type  data</code>. TTL is seconds left to cache. IN is the Internet class.</p></div>
 <div class="card"><p class="tname">EDNS</p><p class="why">Extension header: version, flags (<code>do</code> = DNSSEC OK), UDP size.</p></div>
 <div class="card"><p class="tname">Footer</p><p class="why">Query time, SERVER (IP, port, UDP or TCP), WHEN, MSG SIZE.</p></div>
-</div>
-</details>
-</div>
+      </div>
+    </section>
+
+    <p class="empty" id="empty">Nothing matches this search.</p>
   </main>
 </div>
 
