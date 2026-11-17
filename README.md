@@ -1,44 +1,34 @@
 # library
 
-A small collection of standalone, single-file HTML reference pages on security and Linux topics. Each page is self-contained (inline CSS and JavaScript, no build step) and is published with GitHub Pages.
+A small collection of standalone, single-file HTML reference pages on security and Linux topics. Each page is self-contained (shared CSS and JavaScript, no build step). `index.html` is a shell that frames any page with the portfolio's header, nav bar and footer; GitHub Pages serves it.
 
 ## Pages
 
+<!-- pages:start (generated from library.json by ci/sync-index.py; do not edit) -->
 | Page | Topic |
 |------|-------|
-| `dns-mindmap.html` | Mind map of DNS concepts |
-| `linux-directory-guide.html` | Guide to what lives where in the Linux directory tree |
-| `vapt-toolkit.html` | VAPT toolkit: tools for every phase of a vulnerability assessment and penetration test |
+| [`dns-mindmap.html`](pages/dns-mindmap.html) | Eight branches covering how DNS works, who plays which role, and how to test any server's claims. |
+| [`linux-directory-guide.html`](pages/linux-directory-guide.html) | What lives where in a Linux filesystem, section by section, with search. |
+| [`vapt-toolkit.html`](pages/vapt-toolkit.html) | Tools for every phase of a vulnerability assessment and penetration test, with filters and comparison views. |
+<!-- pages:end -->
 
-Listed in the Library section of the portfolio at `https://fmfalgun.github.io/library.html`, and live at `https://fmfalgun.github.io/<page-name>` (for example `https://fmfalgun.github.io/dns-mindmap.html`), served through the portfolio site, which redirects to this repo's Pages site at `https://fmfalgun.github.io/library/<page-name>`.
+The list above is generated from `library.json`, the index of pages.
+
+Open a page at `https://fmfalgun.github.io/library/?page=<page-name>` (page name = file name without `.html`). The portfolio lists them at `https://fmfalgun.github.io/library.html`.
 
 ## Directory structure
 
 ```
 library/
-├── README.md                    repo details and structure
-├── library.json                 page list read by the portfolio's Library section
-├── .gitignore                   keeps keys, env files and local tool dirs out of git
-├── dns-mindmap.html             DNS mind map page (markup only)
-├── linux-directory-guide.html   Linux directory guide page (markup only)
-├── vapt-toolkit.html            VAPT toolkit page (markup only)
-├── css/
-│   ├── tokens.css               colors, fonts, sizes, dark/light themes
-│   ├── base.css                 page shell: header, layout, sidebar, footer
-│   └── components.css           cards, chips, lists, tables, mind-map branches
-├── js/
-│   ├── core.js                  shared helpers; loads each page's data and script
-│   ├── data/                    one data file per page that needs data
-│   │   ├── linux-directory-guide.js
-│   │   └── vapt-toolkit.js
-│   └── pages/                   one behaviour script per page
-│       ├── dns-mindmap.js
-│       ├── linux-directory-guide.js
-│       └── vapt-toolkit.js
-├── docs/
-│   └── STYLE_GUIDE.md           rules every page follows
-└── ci/
-    └── hooks/
-        └── pre-commit           blocks commits that stage keys or secrets
-                                 (enable: git config core.hooksPath ci/hooks)
+├── README.md        repo details and structure
+├── index.html       shell: portfolio header, nav and footer around the chosen page
+├── library.json     index of pages (read by the shell and the portfolio)
+├── .gitignore       keeps keys, env files and local tool dirs out of git
+├── pages/           the HTML pages, with the css/ and js/ they share
+│   ├── css/         tokens, page shell and components
+│   └── js/          core.js, plus per-page scripts (pages/) and data (data/)
+├── shell/           styles and script for index.html
+├── docs/            STYLE_GUIDE.md, the rules every page follows
+└── ci/              sync-index.py and the pre-commit hook
+    └── hooks/       pre-commit (blocks secrets, refreshes the index)
 ```

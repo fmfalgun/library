@@ -4,19 +4,28 @@
       "file": "dns-mindmap.html",
       "title": "DNS Mindmap",
       "description": "Eight branches covering how DNS works, who plays which role, and how to test any server's claims.",
-      "tags": ["dns", "networking"]
+      "tags": [
+        "dns",
+        "networking"
+      ]
     },
     {
       "file": "linux-directory-guide.html",
       "title": "Linux Directory Guide",
       "description": "What lives where in a Linux filesystem, section by section, with search.",
-      "tags": ["linux", "reference"]
+      "tags": [
+        "linux",
+        "reference"
+      ]
     },
     {
       "file": "vapt-toolkit.html",
       "title": "VAPT Toolkit - All Phases",
       "description": "Tools for every phase of a vulnerability assessment and penetration test, with filters and comparison views.",
-      "tags": ["vapt", "tools"]
+      "tags": [
+        "vapt",
+        "tools"
+      ]
     }
   ]
 }

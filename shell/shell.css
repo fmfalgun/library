@@ -1,0 +1,30 @@
+/* =============================================
+   LIBRARY SHELL
+   Frame around a library page: portfolio nav above, portfolio footer below,
+   the page itself in a full-width iframe between them. Colors, fonts, nav and
+   footer come from the portfolio stylesheets (see index.html).
+   ============================================= */
+
+:root { --nav-height: 60px; }
+
+.shell-main { padding-top: var(--nav-height); }
+
+/* The page fills the screen under the nav; the footer sits below it */
+.shell-frame {
+  display: block;
+  width: 100%;
+  height: calc(100vh - var(--nav-height));
+  border: 0;
+  background: var(--black);
+}
+
+/* Message shown instead of the frame when the page name is not in the index */
+.shell-message {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  color: var(--khaki);
+  line-height: 1.8;
+}
