@@ -99,6 +99,9 @@
 .detail-meta dt { font-family: var(--mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--khaki); }
 .detail-meta dd { margin: 0; font-size: .85rem; overflow-wrap: anywhere; }
 .detail .why { max-width: 80ch; margin: 0 0 8px; }
+.detail-label { font-family: var(--mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--khaki); margin: 12px 0 4px; }
+.person { border-left: 2px solid var(--khaki); padding-left: 10px; margin: 0 0 6px; }
+.person summary { cursor: pointer; padding: 3px 0; font-size: .85rem; }
 .detail .linkrow { border-top: 0; padding-top: 0; }
 .card:has(.detail[open]) { grid-column: 1 / -1; }
 

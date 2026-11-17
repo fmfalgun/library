@@ -2,9 +2,10 @@
  * File purpose: behaviour of vapt-toolkit.html - the phase sidebar, the filter
  * chips, search, and the cards / compare / coverage views. The tool list comes
  * from Library.data (js/data/vapt-toolkit.js); the per-tool details (origin,
- * author, language...) are fetched from the library-tools repo, kept only if a
- * record's show_on lists "vapt", and matched to tools by name. Writing such a
- * record there marks the tool here with no change to this repo.
+ * author, language...) and the people behind each tool are fetched from the
+ * library-data repo, kept only if a record's show_on lists "vapt", and matched
+ * to tools by name. Writing such a record there marks the tool here with no
+ * change to this repo.
  */
 (function () {
   'use strict';
@@ -12,7 +13,7 @@
   var data = Library.data;
   var esc = Library.esc;
   var RECON_DATA = data.RECON_DATA;
-  var RECORDS_BASE = 'https://fmfalgun.github.io/library-tools/data/';
+  var DATA_BASE = 'https://fmfalgun.github.io/library-data/data/';
   var SITE_ID = 'vapt';
   var STATUS_LABEL = { have: 'In Kali Purple', add: 'Worth adding', other: 'Not in our list' };
 
@@ -139,12 +140,16 @@
 
   /**
    * searchText returns the lower-case text the search box looks in: the tool
-   * name plus, when it has details, their name, author, org and story.
+   * name plus, when it has details, their name, author, org and story, and
+   * the names of the linked people.
    * @param {object} d a tool or category entry
    */
   function searchText(d) {
     var text = d.n;
-    (d.details || []).forEach(function (r) { text += ' ' + [r.name, r.author, r.org, r.purpose, r.why_notable].join(' '); });
+    (d.details || []).forEach(function (r) {
+      text += ' ' + [r.name, r.author, r.org, r.purpose, r.why_notable].join(' ');
+      (r.people || []).forEach(function (p) { text += ' ' + [p.name, p.handle, p.org].join(' '); });
+    });
     return text.toLowerCase();
   }
 
@@ -235,8 +240,32 @@
   }
 
   /**
+   * personHTML renders one linked person as a collapsible entry: name and era
+   * in the summary, then org, the "why notable" paragraph and links.
+   * @param {object} person a people record
+   * @returns {string} HTML for a <details> element
+   */
+  function personHTML(person) {
+    var handle = person.handle ? ' (' + esc(person.handle) + ')' : '';
+    return '<details class="person"><summary>' + esc(person.name) + handle + (person.era ? ' · ' + esc(person.era) : '') + '</summary>' +
+      (person.org ? '<p class="why">' + esc(person.org) + '</p>' : '') +
+      (person.why_notable ? '<p class="why">' + esc(person.why_notable) + '</p>' : '') +
+      detailLinksHTML(person) + '</details>';
+  }
+
+  /**
+   * peopleBlockHTML renders the "People" list of a tool record.
+   * @param {object} record a tool detail record with an optional people array
+   * @returns {string} HTML, or '' when no person is linked
+   */
+  function peopleBlockHTML(record) {
+    var people = record.people || [];
+    return people.length ? '<p class="detail-label">People</p>' + people.map(personHTML).join('') : '';
+  }
+
+  /**
    * detailHTML renders one tool record as a collapsible block: the meta
-   * list, the "why notable" story, and its links.
+   * list, the "why notable" story, its links, and the people behind it.
    * @param {object} record a tool detail record
    * @returns {string} HTML for a <details> block
    */
@@ -244,7 +273,7 @@
     return '<details class="detail"><summary>Origin: ' + esc(record.name) + '</summary>' +
       detailMetaHTML(record) +
       (record.why_notable ? '<p class="why">' + esc(record.why_notable) + '</p>' : '') +
-      detailLinksHTML(record) + '</details>';
+      detailLinksHTML(record) + peopleBlockHTML(record) + '</details>';
   }
 
   /**
@@ -433,25 +462,40 @@
   }
 
   /**
-   * useRecords wires the loaded records into the page: matches them to tools,
-   * fills the Language chips, and redraws.
-   * @param {Array} records detail records shown on this page
+   * linkPeople gives each tool record the people records that list it in
+   * their "tools" (record.people), so the Origin block can show them.
+   * @param {Array} tools tool detail records shown on this page
+   * @param {Array} people people records shown on this page
    */
-  function useRecords(records) {
-    attachDetails(records);
-    languages = records.map(primaryLanguage).filter(function (l, i, all) { return l && all.indexOf(l) === i; }).sort();
+  function linkPeople(tools, people) {
+    tools.forEach(function (tool) {
+      tool.people = people.filter(function (p) { return (p.tools || []).indexOf(tool.name) >= 0; });
+    });
+  }
+
+  /**
+   * useRecords wires the loaded records into the page: attaches people to
+   * tools, matches tools to the list, fills the Language chips, and redraws.
+   * @param {Array} found [tool records, people records] shown on this page
+   */
+  function useRecords(found) {
+    linkPeople(found[0], found[1]);
+    attachDetails(found[0]);
+    languages = found[0].map(primaryLanguage).filter(function (l, i, all) { return l && all.indexOf(l) === i; }).sort();
     render(false);
   }
 
   /**
-   * loadRecords fetches the library-tools manifest and every record it lists,
-   * and resolves with the records whose show_on includes this page.
-   * Records that fail to load are skipped; the promise rejects when the
-   * manifest itself is unreachable.
+   * loadRecords fetches one kind of record ("tools" or "people") from the
+   * library-data repo and resolves with those whose show_on includes this
+   * page. Records that fail to load are skipped; the promise rejects when the
+   * kind's manifest is unreachable.
+   * @param {string} kind the data folder: "tools" or "people"
    */
-  function loadRecords() {
-    return Library.fetchJSON(RECORDS_BASE + 'manifest.json').then(function (files) {
-      return Promise.allSettled(files.map(function (f) { return Library.fetchJSON(RECORDS_BASE + f); }));
+  function loadRecords(kind) {
+    var base = DATA_BASE + kind + '/';
+    return Library.fetchJSON(base + 'manifest.json').then(function (files) {
+      return Promise.allSettled(files.map(function (f) { return Library.fetchJSON(base + f); }));
     }).then(function (results) {
       return results.filter(function (r) { return r.status === 'fulfilled'; }).map(function (r) { return r.value; })
         .filter(function (r) { return (r.show_on || []).indexOf(SITE_ID) >= 0; });
@@ -464,5 +508,5 @@
   searchEl.addEventListener('input', function (e) { state.q = e.target.value.trim().toLowerCase(); render(false); });
 
   render(false);
-  loadRecords().then(useRecords).catch(function (err) { console.warn('[vapt] tool details unavailable:', err.message); });
+  Promise.all([loadRecords('tools'), loadRecords('people')]).then(useRecords).catch(function (err) { console.warn('[vapt] tool details unavailable:', err.message); });
 })();

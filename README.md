@@ -1,6 +1,6 @@
 # library
 
-A small collection of standalone, single-file HTML reference pages on security and Linux topics. Each page is self-contained (shared CSS and JavaScript, no build step). `index.html` is a shell that frames any page with the portfolio's header, nav bar and footer; GitHub Pages serves it. Tool details shown on the VAPT page are fetched from the [library-tools](https://github.com/fmfalgun/library-tools) repo.
+A small collection of standalone, single-file HTML reference pages on security and Linux topics. Each page is self-contained (shared CSS and JavaScript, no build step). `index.html` is a shell that frames any page with the portfolio's header, nav bar and footer; GitHub Pages serves it. Tool details shown on the VAPT page are fetched from the [library-data](https://github.com/fmfalgun/library-data) repo.
 
 ## Pages
 
