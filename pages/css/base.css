@@ -12,12 +12,13 @@ html { scroll-padding-top: env(safe-area-inset-top, 0px); }
 
 body {
   margin: 0; min-height: 100%;
-  background: var(--bg); color: var(--text); font-family: var(--mono);
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.6;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-a { color: var(--green); text-decoration: none; }
+a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 code {
@@ -27,9 +28,12 @@ code {
 
 /* Header: title with one accent word, then a one-paragraph subtitle */
 .page-header { padding: 20px var(--gutter) 12px; max-width: var(--page-width); margin: 0 auto; }
-h1 { font-size: 1.2rem; margin: 0 0 4px; letter-spacing: .02em; font-weight: 700; }
-h1 span { color: var(--green); }
-.sub { color: var(--dim); font-size: .76rem; margin: 0; line-height: 1.5; max-width: 78ch; }
+h1 {
+  font-family: var(--font-display); font-size: 2rem; margin: 0 0 6px;
+  letter-spacing: .04em; font-weight: 700;
+}
+h1 span { color: var(--accent); }
+.sub { color: var(--dim); font-size: .9rem; margin: 0; line-height: 1.7; max-width: 78ch; }
 
 /* Layout: sidebar (optional) plus main column */
 .layout {
@@ -55,7 +59,7 @@ nav.steps {
   transition: width .2s, padding .2s, opacity .2s;
 }
 nav.steps.collapsed { width: 0; padding: 0; border: none; overflow: hidden; opacity: 0; }
-.navlabel { color: var(--dim); font-size: .62rem; padding: 4px 8px 6px; letter-spacing: .05em; }
+.navlabel { font-family: var(--mono); color: var(--dim); font-size: .66rem; padding: 4px 8px 6px; letter-spacing: .05em; }
 
 .phase-row { display: flex; align-items: center; gap: 4px; }
 .phase-btn, .step-btn {
@@ -63,9 +67,9 @@ nav.steps.collapsed { width: 0; padding: 0; border: none; overflow: hidden; opac
   background: none; border: none; color: var(--text); font-family: var(--mono);
   border-radius: var(--radius); cursor: pointer;
 }
-.phase-btn { flex: 1; font-size: .73rem; padding: 7px 6px; font-weight: 600; }
+.phase-btn { flex: 1; font-size: .78rem; padding: 7px 6px; font-weight: 600; }
 .phase-btn:hover { background: var(--hover-bg); }
-.phase-btn.active-phase { color: var(--green); background: var(--green-bg); }
+.phase-btn.active-phase { color: var(--accent); background: var(--accent-bg); }
 .phase-btn.disabled { color: var(--dim); cursor: default; font-weight: 400; }
 .phase-btn.disabled:hover { background: none; }
 .soon {
@@ -81,16 +85,17 @@ nav.steps.collapsed { width: 0; padding: 0; border: none; overflow: hidden; opac
 }
 .steplist.collapsed { max-height: 0 !important; opacity: 0; margin: 0; padding: 0; border: none; }
 .step-btn {
-  width: 100%; color: var(--dim); font-size: .68rem; padding: 6px;
+  width: 100%; color: var(--dim); font-size: .74rem; padding: 6px;
   transition: background .15s, color .15s;
 }
 .step-btn:hover { background: var(--hover-bg); color: var(--text); text-decoration: none; }
-.step-btn.active { background: var(--green-bg); color: var(--green); font-weight: 600; }
+.step-btn.active { background: var(--accent-bg); color: var(--accent); }
 
 /* Footer */
 .page-footer {
   max-width: var(--page-width); margin: 0 auto; padding: 10px var(--gutter) 40px;
-  color: var(--dim); font-size: .64rem; line-height: 1.6;
+  border-top: 1px solid var(--line); font-family: var(--mono);
+  color: var(--dim); font-size: .7rem; line-height: 1.6;
 }
 
 /* Phone width: sidebar becomes a block above the content */
@@ -106,5 +111,5 @@ nav.steps.collapsed { width: 0; padding: 0; border: none; overflow: hidden; opac
   nav.steps.collapsed { display: none; width: 100%; opacity: 1; padding: 10px; border: 1px solid var(--line); }
   .phase-row, .phase-btn, .step-btn { width: 100%; }
   .steplist { margin-left: 6px; }
-  h1 { font-size: 1.05rem; }
+  h1 { font-size: 1.5rem; }
 }

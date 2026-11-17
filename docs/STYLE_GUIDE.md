@@ -12,7 +12,7 @@ Every page in this repo looks and behaves the same because it is built only from
 6. **Dark is the default theme;** light follows the visitor's system setting. Test a new page in both.
 7. **Must work at phone width** (layout collapses under 820px) with no horizontal page scroll.
 8. **File names are lowercase-with-dashes** (`my-page.html`); the file name is the page's URL.
-9. **No external fonts, scripts or trackers.** Links to other sites are fine.
+9. **Look follows the portfolio:** near-black olive surfaces, cream text, amber accent (`--accent`), Rajdhani headings, Inter body text, Share Tech Mono for labels. These fonts are loaded once, from `tokens.css`. No other external fonts, scripts or trackers; links to other sites are fine.
 10. **Every page has a `<meta name="description">`** (one sentence); the index entry is created from it.
 11. **Code rules:** every JS function has a comment (what, why, params, returns); every file starts with a header comment naming its single purpose.
 
