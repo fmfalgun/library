@@ -379,8 +379,8 @@
     buildChipRow(verifiedRow, VERIFIED_OPTIONS, 'verified');
     buildChipRow(detailsRow, DETAILS_OPTIONS, 'details');
     buildChipRow(langRow, [['all', 'All languages']].concat(languages.map(function (l) { return [l, l]; })), 'lang');
-    detailsRow.style.display = isRecon && languages.length ? 'flex' : 'none';
-    langRow.style.display = isRecon && languages.length ? 'flex' : 'none';
+    detailsRow.style.display = isRecon ? 'flex' : 'none';
+    langRow.style.display = isRecon ? 'flex' : 'none';
     viewToggle.querySelectorAll('button').forEach(function (b) {
       b.classList.toggle('active', b.dataset.view === state.view);
       b.disabled = !isRecon && b.dataset.view !== 'cards';
