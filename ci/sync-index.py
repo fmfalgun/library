@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""File purpose: keep library.json (the page index) and the README page table
-in step with the files in pages/.
+"""File purpose: keep library.json (the page index) and the generated README
+blocks (page table, page rules) in step with their sources.
 
-Direction of data: pages/*.html -> library.json -> README.md. The README is
-only ever an output; this script never reads it for page data and a hand edit
-inside its markers is overwritten on the next run.
+Direction of data: pages/*.html -> library.json -> README.md, and
+docs/PAGE_RULES.md -> README.md. The README is only ever an output; this
+script never reads it for data and a hand edit inside its markers is
+overwritten on the next run.
 
 Run from the repo root: python3 ci/sync-index.py
 Exit codes: 0 ok (files may have been rewritten), 1 the index lists a page
@@ -19,8 +20,11 @@ from pathlib import Path
 PAGES_DIR = Path("pages")
 INDEX_FILE = Path("library.json")
 README_FILE = Path("README.md")
+RULES_FILE = Path("docs/PAGE_RULES.md")
 TABLE_START = "<!-- pages:start (generated from library.json by ci/sync-index.py; do not edit) -->"
 TABLE_END = "<!-- pages:end -->"
+RULES_START = "<!-- rules:start (generated from docs/PAGE_RULES.md by ci/sync-index.py; do not edit) -->"
+RULES_END = "<!-- rules:end -->"
 
 
 def read_page_meta(path):
@@ -69,16 +73,31 @@ def build_table(index):
     return "\n".join(lines)
 
 
-def write_readme_table(index):
-    """Replace the text between the table markers in README.md with a fresh
-    table. Returns False (and writes nothing) when a marker is missing."""
-    text = README_FILE.read_text(encoding="utf-8")
-    pattern = re.compile(re.escape(TABLE_START) + r".*?" + re.escape(TABLE_END), re.S)
+def build_rules_list():
+    """Return the R<n> rule lines of docs/PAGE_RULES.md, ready for the README."""
+    lines = RULES_FILE.read_text(encoding="utf-8").splitlines()
+    return "\n".join(line for line in lines if re.match(r"^- \*\*R\d+ ", line))
+
+
+def replace_block(text, start, end, body):
+    """Return text with everything between the start and end markers replaced
+    by body, or None when a marker is missing."""
+    pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.S)
     if not pattern.search(text):
-        print("sync-index: README.md has no pages:start / pages:end markers", file=sys.stderr)
+        return None
+    return pattern.sub(lambda _: start + "\n" + body + "\n" + end, text)
+
+
+def write_readme(index):
+    """Regenerate the page table and the rules list in README.md.
+    Returns False (and writes nothing) when a marker is missing."""
+    text = README_FILE.read_text(encoding="utf-8")
+    text = replace_block(text, TABLE_START, TABLE_END, build_table(index))
+    text = replace_block(text, RULES_START, RULES_END, build_rules_list()) if text else None
+    if text is None:
+        print("sync-index: README.md is missing a pages:/rules: start or end marker", file=sys.stderr)
         return False
-    block = TABLE_START + "\n" + build_table(index) + "\n" + TABLE_END
-    README_FILE.write_text(pattern.sub(lambda _: block, text), encoding="utf-8")
+    README_FILE.write_text(text, encoding="utf-8")
     return True
 
 
@@ -93,7 +112,7 @@ def main():
     INDEX_FILE.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     if added:
         print("sync-index: added to library.json: " + ", ".join(added))
-    return 0 if write_readme_table(index) else 1
+    return 0 if write_readme(index) else 1
 
 
 if __name__ == "__main__":

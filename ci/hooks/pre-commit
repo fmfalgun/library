@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Pre-commit hook: blocks commits that stage private keys, key files or tokens.
 # Purpose: keep secrets out of this public repo, and keep the page index and
-# README table in step with pages/. Needs git, grep and python3; if gitleaks
+# README table in step with pages/, and enforce docs/PAGE_RULES.md on every
+# page (ci/check-pages.py). Needs git, grep and python3; if gitleaks
 # is installed it also scans the staged changes for tokens.
 # Activate with: git config core.hooksPath ci/hooks
 
@@ -45,6 +46,16 @@ run_gitleaks() {
   gitleaks git --pre-commit --staged --redact --no-banner
 }
 
+# run_page_rules checks every page against docs/PAGE_RULES.md and fails the
+# commit on any violation. A missing python3 is only a note.
+run_page_rules() {
+  if ! command -v python3 >/dev/null; then
+    echo "pre-commit: python3 not installed; skipping page rules" >&2
+    return 0
+  fi
+  python3 ci/check-pages.py
+}
+
 # run_index_sync appends new pages/*.html to library.json, regenerates the
 # README page table, and stages both files so they land in the same commit.
 # A missing python3 is only a note. A failure (index lists a missing page)
@@ -65,7 +76,8 @@ main() {
     if is_refused "$path"; then refused=1; fi
   done < <(list_staged_files)
   run_gitleaks || refused=1
-  run_index_sync || refused=1
+  # The index is only touched when every page passes, so a rejected page never lands in it.
+  if run_page_rules; then run_index_sync || refused=1; else refused=1; fi
   if (( refused )); then
     echo "pre-commit: commit blocked. Unstage the file(s) and keep secrets out of git." >&2
   fi
