@@ -222,17 +222,27 @@
   }
 
   /**
-   * detailHTML renders one tool record as a collapsible block: author, org,
-   * year and language tags, the "why notable" story, and its links.
+   * detailMetaHTML renders a record's author, org, year and language as a
+   * labelled list (not pills, because author and org strings can be long).
+   * @param {object} record a tool detail record
+   * @returns {string} HTML for a <dl>, or '' when the record has none of them
+   */
+  function detailMetaHTML(record) {
+    var rows = [['Author', record.author], ['Org', record.org], ['Year', record.year], ['Language', record.language]]
+      .filter(function (row) { return row[1]; })
+      .map(function (row) { return '<div><dt>' + esc(row[0]) + '</dt><dd>' + esc(row[1]) + '</dd></div>'; });
+    return rows.length ? '<dl class="detail-meta">' + rows.join('') + '</dl>' : '';
+  }
+
+  /**
+   * detailHTML renders one tool record as a collapsible block: the meta
+   * list, the "why notable" story, and its links.
    * @param {object} record a tool detail record
    * @returns {string} HTML for a <details> block
    */
   function detailHTML(record) {
-    var tags = [record.author, record.org, record.year, record.language].filter(Boolean).map(function (t) {
-      return '<span class="pill blue">' + esc(t) + '</span>';
-    }).join('');
     return '<details class="detail"><summary>Origin: ' + esc(record.name) + '</summary>' +
-      '<div class="pillrow">' + tags + '</div>' +
+      detailMetaHTML(record) +
       (record.why_notable ? '<p class="why">' + esc(record.why_notable) + '</p>' : '') +
       detailLinksHTML(record) + '</details>';
   }

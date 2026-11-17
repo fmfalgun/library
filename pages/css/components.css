@@ -90,12 +90,17 @@
   padding: 2px 7px; border: 1px solid var(--line); border-radius: 2px;
 }
 
-/* Collapsible detail block inside a card (origin story, author, links) */
+/* Collapsible detail block inside a card (origin story, author, links).
+   An opened block makes its card span the whole grid row, so the story reads
+   at a normal line length instead of in a narrow column. */
 .detail { border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 7px; }
-.detail summary { cursor: pointer; font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; color: var(--accent); }
-.detail .pillrow { margin: 8px 0 6px; }
-.detail .why { margin: 0 0 6px; }
+.detail summary { cursor: pointer; padding: 4px 0; font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; color: var(--accent); }
+.detail-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 16px; margin: 8px 0; }
+.detail-meta dt { font-family: var(--mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--khaki); }
+.detail-meta dd { margin: 0; font-size: .85rem; overflow-wrap: anywhere; }
+.detail .why { max-width: 80ch; margin: 0 0 8px; }
 .detail .linkrow { border-top: 0; padding-top: 0; }
+.card:has(.detail[open]) { grid-column: 1 / -1; }
 
 /* Link and source footers inside a card */
 .linkrow, .repo {

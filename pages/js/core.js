@@ -66,13 +66,20 @@
 
   /**
    * initSidebar makes #collapseBtn show or hide the sidebar (nav.steps).
+   * On phones the sidebar starts collapsed (it would otherwise push the
+   * content below the fold) and closes again after a section is picked.
    * Pages without a sidebar have no such button, so nothing happens for them.
    */
   function initSidebar() {
     var button = document.getElementById('collapseBtn');
     var nav = document.querySelector('nav.steps');
     if (!button || !nav) return;
+    var isPhone = function () { return window.matchMedia('(max-width: 820px)').matches; };
+    if (isPhone()) nav.classList.add('collapsed');
     button.addEventListener('click', function () { nav.classList.toggle('collapsed'); });
+    nav.addEventListener('click', function (event) {
+      if (isPhone() && event.target.closest('.step-btn, .phase-btn:not(.disabled)')) nav.classList.add('collapsed');
+    });
   }
 
   /**
