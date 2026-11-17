@@ -21,4 +21,5 @@ Every page in this repo looks and behaves the same because it is built only from
 2. Reuse existing components (`.card`, `.grid`, `.list`, `.chip`, `.notebox`, `.codeblock`, `.branch`).
 3. If a component is missing, add it to `css/components.css` first.
 4. Add `js/pages/<page-name>.js` (and `js/data/<page-name>.js`) only if the page needs behaviour.
-5. Add the page to the table in `README.md`, and add a redirect stub to the `fmfalgun.github.io` repo.
+5. Add the page to `library.json` (title, description, tags); the portfolio's Library section lists pages from that file.
+6. Add the page to the table in `README.md`, and add a redirect stub to the `fmfalgun.github.io` repo.

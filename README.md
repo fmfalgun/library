@@ -10,13 +10,14 @@ A small collection of standalone, single-file HTML reference pages on security a
 | `linux-directory-guide.html` | Guide to what lives where in the Linux directory tree |
 | `vapt-toolkit.html` | VAPT toolkit: tools for every phase of a vulnerability assessment and penetration test |
 
-Live at `https://fmfalgun.github.io/<page-name>` (for example `https://fmfalgun.github.io/dns-mindmap.html`), served through the portfolio site, which redirects to this repo's Pages site at `https://fmfalgun.github.io/library/<page-name>`.
+Listed in the Library section of the portfolio at `https://fmfalgun.github.io/library.html`, and live at `https://fmfalgun.github.io/<page-name>` (for example `https://fmfalgun.github.io/dns-mindmap.html`), served through the portfolio site, which redirects to this repo's Pages site at `https://fmfalgun.github.io/library/<page-name>`.
 
 ## Directory structure
 
 ```
 library/
 ├── README.md                    repo details and structure
+├── library.json                 page list read by the portfolio's Library section
 ├── .gitignore                   keeps keys, env files and local tool dirs out of git
 ├── dns-mindmap.html             DNS mind map page (markup only)
 ├── linux-directory-guide.html   Linux directory guide page (markup only)
