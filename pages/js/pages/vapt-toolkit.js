@@ -2,9 +2,9 @@
  * File purpose: behaviour of vapt-toolkit.html - the phase sidebar, the filter
  * chips, search, and the cards / compare / coverage views. The tool list comes
  * from Library.data (js/data/vapt-toolkit.js); the per-tool details (origin,
- * author, language...) are fetched from the portfolio's toolkit JSON files
- * (data/toolkit/ in fmfalgun.github.io), matched to tools by name, so adding a
- * JSON file there marks that tool here with no change to this repo.
+ * author, language...) are fetched from the library-tools repo, kept only if a
+ * record's show_on lists "vapt", and matched to tools by name. Writing such a
+ * record there marks the tool here with no change to this repo.
  */
 (function () {
   'use strict';
@@ -12,10 +12,8 @@
   var data = Library.data;
   var esc = Library.esc;
   var RECON_DATA = data.RECON_DATA;
-  var SITE_ROOT = 'https://fmfalgun.github.io/';
-  var TOOLKIT_MANIFEST = SITE_ROOT + 'data/toolkit/manifest.json';
-  var DETAIL_CATEGORY = 'Hacking Tools';
-  var EXTRA_STEP = 'More from toolkit';
+  var RECORDS_BASE = 'https://fmfalgun.github.io/library-tools/data/';
+  var SITE_ID = 'vapt';
   var STATUS_LABEL = { have: 'In Kali Purple', add: 'Worth adding', other: 'Not in our list' };
 
   var PHASES = [
@@ -49,7 +47,6 @@
 
   var state = { phase: 'Reconnaissance', cat: 'All', status: 'all', lic: 'all', verified: 'all', details: 'all', lang: 'all', q: '', view: 'cards', expanded: { 'Reconnaissance': true } };
 
-  var extraTools = [];
   var languages = [];
 
   /** currentPhase returns the PHASES entry selected in the sidebar. */
@@ -204,7 +201,7 @@
   /**
    * primaryLanguage reduces a detail record's free-text language ("C (core);
    * Lua (NSE scripts)") to its first word, so the Language chips stay short.
-   * @param {object} record a toolkit detail record
+   * @param {object} record a tool detail record
    * @returns {string} the first word, or '' when the record has no language
    */
   function primaryLanguage(record) {
@@ -213,7 +210,7 @@
 
   /**
    * detailLinksHTML renders a detail record's links as a link row.
-   * @param {object} record a toolkit detail record
+   * @param {object} record a tool detail record
    * @returns {string} HTML, or '' when the record has no links
    */
   function detailLinksHTML(record) {
@@ -225,9 +222,9 @@
   }
 
   /**
-   * detailHTML renders one toolkit record as a collapsible block: author, org,
+   * detailHTML renders one tool record as a collapsible block: author, org,
    * year and language tags, the "why notable" story, and its links.
-   * @param {object} record a toolkit detail record
+   * @param {object} record a tool detail record
    * @returns {string} HTML for a <details> block
    */
   function detailHTML(record) {
@@ -246,18 +243,6 @@
    */
   function detailsBlockHTML(d) {
     return (d.details || []).map(detailHTML).join('');
-  }
-
-  /**
-   * extraCardHTML renders a toolkit record that matches no tool in the list,
-   * so nothing in the portfolio toolkit is lost.
-   * @param {object} d an extra entry {n, c, details:[record]}
-   */
-  function extraCardHTML(d) {
-    var record = d.details[0];
-    return '<div class="card k-other"><p class="tname">' + esc(record.name) + '</p><p class="tcat">from the portfolio toolkit</p>' +
-      '<div class="pillrow"><span class="pill amber">Details</span></div>' +
-      '<p class="why">' + esc(record.purpose || '') + '</p>' + detailsBlockHTML(d) + '</div>';
   }
 
   /**
@@ -302,14 +287,6 @@
     return '<div class="subhead"><span class="' + dotClass + '"></span> ' + label + ' <span class="line"></span></div>';
   }
 
-  /**
-   * toolCardHTML renders a list entry or an extra toolkit entry as the right card.
-   * @param {object} d a tool entry or an extra entry
-   */
-  function toolCardHTML(d) {
-    return d.extra ? extraCardHTML(d) : cardHTML(d);
-  }
-
   /** buildCards fills the grid with the cards for the current phase, step and filters. */
   function buildCards() {
     var phase = currentPhase();
@@ -317,9 +294,8 @@
       grid.innerHTML = phase.data.filter(function (d) { return matches(d, false); }).map(catCardHTML).join('');
       return;
     }
-    var pool = phase.data.concat(extraTools).filter(function (d) { return matches(d, true); });
-    if (state.cat === 'All') { grid.innerHTML = pool.map(toolCardHTML).join(''); return; }
-    if (state.cat === EXTRA_STEP) { grid.innerHTML = pool.map(extraCardHTML).join(''); return; }
+    var pool = phase.data.filter(function (d) { return matches(d, true); });
+    if (state.cat === 'All') { grid.innerHTML = pool.map(cardHTML).join(''); return; }
     var passive = pool.filter(function (d) { return d.act === 'passive'; });
     var active = pool.filter(function (d) { return d.act === 'active'; });
     var html = '';
@@ -434,67 +410,41 @@
 
   /**
    * attachDetails links each detail record to the list tool(s) it names
-   * (d.details) and returns the records that match no tool.
-   * @param {Array} records toolkit detail records
-   * @returns {Array} the records no list tool matched
+   * (d.details). Records that match no tool are ignored.
+   * @param {Array} records detail records shown on this page
    */
   function attachDetails(records) {
-    var unmatched = [];
     records.forEach(function (record) {
       var key = normalizeName(record.name);
-      var hits = RECON_DATA.filter(function (d) { return nameKeys(d.n).indexOf(key) >= 0; });
-      hits.forEach(function (d) { (d.details = d.details || []).push(record); });
-      if (!hits.length) unmatched.push(record);
+      RECON_DATA.forEach(function (d) {
+        if (nameKeys(d.n).indexOf(key) >= 0) (d.details = d.details || []).push(record);
+      });
     });
-    return unmatched;
   }
 
   /**
    * useRecords wires the loaded records into the page: matches them to tools,
-   * adds an extra sidebar step for the unmatched ones, fills the Language
-   * chips, and redraws.
-   * @param {Array} records toolkit detail records
+   * fills the Language chips, and redraws.
+   * @param {Array} records detail records shown on this page
    */
   function useRecords(records) {
-    var unmatched = attachDetails(records);
-    extraTools = unmatched.map(function (record) { return { n: record.name, c: EXTRA_STEP, extra: true, verified: true, details: [record] }; });
-    if (extraTools.length) currentReconPhase().steps = data.RECON_STEPS.concat([EXTRA_STEP]);
+    attachDetails(records);
     languages = records.map(primaryLanguage).filter(function (l, i, all) { return l && all.indexOf(l) === i; }).sort();
     render(false);
   }
 
-  /** currentReconPhase returns the Reconnaissance entry of PHASES. */
-  function currentReconPhase() { return PHASES.find(function (p) { return p.type === 'recon'; }); }
-
   /**
-   * fetchTools fetches every tool JSON listed by one toolkit manifest.
-   * @param {string} manifestPath path of the manifest, relative to the site root
-   * @returns {Promise<Array>} the records that loaded (failed files are skipped)
+   * loadRecords fetches the library-tools manifest and every record it lists,
+   * and resolves with the records whose show_on includes this page.
+   * Records that fail to load are skipped; the promise rejects when the
+   * manifest itself is unreachable.
    */
-  function fetchTools(manifestPath) {
-    var dir = SITE_ROOT + manifestPath.replace(/[^/]+$/, '');
-    return Library.fetchJSON(SITE_ROOT + manifestPath).then(function (files) {
-      return Promise.allSettled(files.map(function (f) { return Library.fetchJSON(dir + f); }));
+  function loadRecords() {
+    return Library.fetchJSON(RECORDS_BASE + 'manifest.json').then(function (files) {
+      return Promise.allSettled(files.map(function (f) { return Library.fetchJSON(RECORDS_BASE + f); }));
     }).then(function (results) {
-      return results.filter(function (r) { return r.status === 'fulfilled'; }).map(function (r) { return r.value; });
-    });
-  }
-
-  /**
-   * loadToolkit follows the portfolio's toolkit manifest (categories, then
-   * phase or flat manifests, then tool files) and resolves with all records of
-   * the Hacking Tools category. Rejects when the top-level manifest is unreachable.
-   */
-  function loadToolkit() {
-    return Library.fetchJSON(TOOLKIT_MANIFEST).then(function (top) {
-      var paths = [];
-      top.categories.forEach(function (c) {
-        if (c.type === 'phases') c.phases.forEach(function (ph) { paths.push(ph.manifest); });
-        else paths.push(c.manifest);
-      });
-      return Promise.all(paths.map(fetchTools));
-    }).then(function (lists) {
-      return [].concat.apply([], lists).filter(function (r) { return r.category === DETAIL_CATEGORY; });
+      return results.filter(function (r) { return r.status === 'fulfilled'; }).map(function (r) { return r.value; })
+        .filter(function (r) { return (r.show_on || []).indexOf(SITE_ID) >= 0; });
     });
   }
 
@@ -504,5 +454,5 @@
   searchEl.addEventListener('input', function (e) { state.q = e.target.value.trim().toLowerCase(); render(false); });
 
   render(false);
-  loadToolkit().then(useRecords).catch(function (err) { console.warn('[vapt-toolkit] toolkit details unavailable:', err.message); });
+  loadRecords().then(useRecords).catch(function (err) { console.warn('[vapt] tool details unavailable:', err.message); });
 })();

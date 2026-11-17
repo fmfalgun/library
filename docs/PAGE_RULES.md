@@ -20,7 +20,7 @@ Every HTML page in this repo must follow these rules, so all pages look and beha
 - Dark is the default theme; light follows the visitor's system setting. Test a new page in both.
 - Must work at phone width (layout collapses under 820px) with no horizontal page scroll.
 - Look follows the portfolio: near-black olive surfaces, cream text, amber accent (`--accent`), Rajdhani headings, Inter body text, Share Tech Mono for labels; flat, square, outlined components in muted earth tones, and a khaki `[// LIBRARY]` label above each title. Colors, fonts, radii and widths come from `tokens.css`; never write a hex color outside that file.
-- Page scripts may fetch JSON from `https://fmfalgun.github.io/` (for example the portfolio's `data/toolkit/`) and nothing else; show the page without that data if the fetch fails.
+- Page scripts may fetch JSON from `https://fmfalgun.github.io/` (for example tool records from the `library-tools` repo) and nothing else; show the page without that data if the fetch fails.
 - Every JS function has a comment (what, why, params, returns).
 
 ## New page checklist
