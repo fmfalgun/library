@@ -26,8 +26,13 @@ code {
   background: var(--hover-bg); padding: 1px 5px; border-radius: var(--radius);
 }
 
-/* Header: title with one accent word, then a one-paragraph subtitle */
-.page-header { padding: 20px var(--gutter) 12px; max-width: var(--page-width); margin: 0 auto; }
+/* Header: small khaki label (as on the portfolio pages), title with one
+   accent word, then a one-paragraph subtitle */
+.page-header { padding: 28px var(--gutter) 18px; max-width: var(--page-width); margin: 0 auto 18px; border-bottom: 1px solid var(--line); }
+.page-header::before {
+  content: "[// LIBRARY]"; display: block; margin-bottom: .6rem;
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .2em; color: var(--khaki);
+}
 h1 {
   font-family: var(--font-display); font-size: 2rem; margin: 0 0 6px;
   letter-spacing: .04em; font-weight: 700;
@@ -59,7 +64,7 @@ nav.steps {
   transition: width .2s, padding .2s, opacity .2s;
 }
 nav.steps.collapsed { width: 0; padding: 0; border: none; overflow: hidden; opacity: 0; }
-.navlabel { font-family: var(--mono); color: var(--dim); font-size: .66rem; padding: 4px 8px 6px; letter-spacing: .05em; }
+.navlabel { font-family: var(--mono); color: var(--khaki); font-size: .66rem; padding: 4px 8px 6px; letter-spacing: .18em; }
 
 .phase-row { display: flex; align-items: center; gap: 4px; }
 .phase-btn, .step-btn {

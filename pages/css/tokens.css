@@ -21,14 +21,17 @@
   --text: #e8e4d9;
   --dim: #8a8f80;
 
-  /* Hue palette: one name per hue, used for status pills, chips and branches */
-  --green: #6fae7b;
+  /* Hue palette: muted earth tones (olive, khaki, rust, slate) so pills and
+     branches stay distinguishable without breaking the portfolio's feel.
+     Names are historical: --violet is khaki, --blue is slate. */
+  --green: #8aa66f;
   --amber: #d4882a;
-  --violet: #a595d6;
-  --blue: #6aa0c8;
-  --red: #d4636f;
-  --cyan: #5fb3b8;
-  --lime: #a9b860;
+  --violet: #a88f6a;
+  --blue: #7f9a96;
+  --red: #c4684a;
+  --cyan: #6f9a8c;
+  --lime: #a9a45a;
+  --khaki: #8b7355;
 
   /* The page's main accent (links, active states, headings' accent word) */
   --accent: var(--amber);
@@ -66,15 +69,15 @@
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     --bg: #f4f1e8; --panel: #fffdf7; --line: #d9d4c3; --text: #1d2118; --dim: #666b5c;
-    --green: #2f7d4a; --amber: #a8650f; --violet: #6b58d6; --blue: #1f6fa8;
-    --red: #b83a4a; --cyan: #0b7f86; --lime: #62740f;
+    --green: #4f7a35; --amber: #a8650f; --violet: #7d6338; --blue: #3f6f6a;
+    --red: #a5482c; --cyan: #2f7a68; --lime: #6c6a14; --khaki: #7d6338;
     color-scheme: light;
   }
 }
 
 :root[data-theme="light"] {
   --bg: #f4f1e8; --panel: #fffdf7; --line: #d9d4c3; --text: #1d2118; --dim: #666b5c;
-  --green: #2f7d4a; --amber: #a8650f; --violet: #6b58d6; --blue: #1f6fa8;
-  --red: #b83a4a; --cyan: #0b7f86; --lime: #62740f;
+  --green: #4f7a35; --amber: #a8650f; --violet: #7d6338; --blue: #3f6f6a;
+  --red: #a5482c; --cyan: #2f7a68; --lime: #6c6a14; --khaki: #7d6338;
   color-scheme: light;
 }
