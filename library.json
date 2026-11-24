@@ -31,7 +31,10 @@
       "file": "gate.html",
       "title": "GATE Prep",
       "description": "GATE syllabus coverage, topic notes, revision sheets and practice questions, read live from the gate-library repo.",
-      "tags": []
+      "tags": [
+        "gate",
+        "study"
+      ]
     }
   ]
 }
