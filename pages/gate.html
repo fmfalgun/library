@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GATE Prep | Library</title>
+<meta name="description" content="GATE syllabus coverage, topic notes, revision sheets and practice questions, read live from the gate-library repo.">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<script src="js/core.js" defer></script>
+</head>
+<body data-page="gate">
+<header class="page-header">
+  <h1>GATE <span>Prep</span></h1>
+  <p class="sub">Which parts of the GATE syllabus are covered, with the notes, a short revision sheet and practice questions for each topic. Everything is read live from the gate-library repo; a topic appears here only when it is marked for this site.</p>
+</header>
+
+<div class="layout">
+  <div class="navwrap">
+    <button class="collapsebtn" id="collapseBtn" title="Collapse panel">☰<span class="label"> Papers</span></button>
+    <nav class="steps" id="steps"></nav>
+  </div>
+  <main>
+    <div class="toolbar" id="toolbar">
+      <input class="search" id="search" placeholder="Search topics...">
+      <div class="viewtoggle" id="viewToggle">
+        <button data-view="coverage" class="active">Coverage</button>
+        <button data-view="topics">Topics</button>
+      </div>
+    </div>
+    <p class="count" id="count"></p>
+    <div id="content"></div>
+  </main>
+</div>
+
+<footer class="page-footer">Data: gate-library (api/v1 index and coverage). Percentages count only topics marked for this site. Math is rendered with KaTeX, loaded from a CDN when a topic is opened. GATE 2027 syllabus: IIT Madras, gate2027.iitm.ac.in.</footer>
+</body>
+</html>

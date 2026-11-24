@@ -20,7 +20,7 @@ Every HTML page in this repo must follow these rules, so all pages look and beha
 - Dark is the default theme; light follows the visitor's system setting. Test a new page in both.
 - Must work at phone width (layout collapses under 820px) with no horizontal page scroll.
 - Look follows the portfolio: near-black olive surfaces, cream text, amber accent (`--accent`), Rajdhani headings, Inter body text, Share Tech Mono for labels; flat, square, outlined components in muted earth tones, and a khaki `[// LIBRARY]` label above each title. Colors, fonts, radii and widths come from `tokens.css`; never write a hex color outside that file.
-- Page scripts may fetch JSON from `https://fmfalgun.github.io/` (for example tool and people records from the `library-data` repo) and nothing else; show the page without that data if the fetch fails.
+- Page scripts may fetch JSON from `https://fmfalgun.github.io/` (for example tool and people records from the `library-data` repo) and nothing else; show the page without that data if the fetch fails. One exception: `gate.html` loads the pinned KaTeX 0.16.11 stylesheet and script from cdn.jsdelivr.net (with integrity hashes) to render math, and fetches topic Markdown from `fmfalgun.github.io/gate-library/`; if KaTeX fails to load the TeX is shown as plain code.
 - Every JS function has a comment (what, why, params, returns).
 
 ## New page checklist

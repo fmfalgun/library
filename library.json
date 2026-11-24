@@ -26,6 +26,24 @@
         "vapt",
         "tools"
       ]
+    },
+    {
+      "file": "gate.html",
+      "title": "GATE Prep",
+      "description": "GATE syllabus coverage, topic notes, revision sheets and practice questions, read live from the gate-library repo.",
+      "tags": [
+        "gate",
+        "study"
+      ]
+    },
+    {
+      "file": "dsa.html",
+      "title": "DSA Library",
+      "description": "Data structure and algorithm concepts, solved problems and discussions, read live from the dsa-library repo.",
+      "tags": [
+        "dsa",
+        "study"
+      ]
     }
   ]
 }

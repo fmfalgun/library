@@ -10,6 +10,8 @@ A small collection of standalone, single-file HTML reference pages on security a
 | [`dns-mindmap.html`](pages/dns-mindmap.html) | Eight branches covering how DNS works, who plays which role, and how to test any server's claims. |
 | [`linux-directory-guide.html`](pages/linux-directory-guide.html) | What lives where in a Linux filesystem, section by section, with search. |
 | [`vapt-toolkit.html`](pages/vapt-toolkit.html) | Tools for every phase of a vulnerability assessment and penetration test, with filters and comparison views. |
+| [`gate.html`](pages/gate.html) | GATE syllabus coverage, topic notes, revision sheets and practice questions, read live from the gate-library repo. |
+| [`dsa.html`](pages/dsa.html) | Data structure and algorithm concepts, solved problems and discussions, read live from the dsa-library repo. |
 <!-- pages:end -->
 
 The list above is generated from `library.json`, the index of pages.
